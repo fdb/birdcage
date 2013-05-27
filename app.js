@@ -65,8 +65,9 @@ birdcage.startServer = function() {
       res.end(html);
     });
   });
-  console.log('Listening at http://127.0.0.1:3000/');
-  server.listen(3000, '127.0.0.1');
+  var port = 6633;
+  console.log('Listening at http://0.0.0.0:' + port + '/');
+  server.listen(port, '0.0.0.0');
 };
 
 birdcage.start = function(query) {
