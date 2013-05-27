@@ -24,15 +24,9 @@ birdcage.store = function(searchTerm) {
 };
 
 birdcage._saveTweets = function(tweets) {
-  birdcage._db.collection('tweets', function(err, collection) {
-    if (err) {
-      console.log(err);
-      return;
-    }
-    _.each(tweets, function(tweet) {
-      console.log("SAVE " + tweet.text);
-      collection.update({ id: tweet.id }, tweet, {upsert: true});
-    });
+  _.each(tweets, function(tweet) {
+    console.log("SAVE " + tweet.text);
+    birdcage.tweets.update({ id: tweet.id }, tweet, {upsert: true});
   });
 };
 
@@ -49,7 +43,14 @@ birdcage.start = function(query) {
     if (err) {
       throw(err);
     } else {
-      birdcage.startFetcher(query);
+      birdcage._db.collection('tweets', function(err, collection) {
+        if (err) {
+          throw(err);
+        } else {
+          birdcage.tweets = collection;
+          birdcage.startFetcher(query);
+        }
+      });
     }
   });
 };
