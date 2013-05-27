@@ -2,6 +2,7 @@ var querystring = require('querystring');
 var request = require('request');
 var mongodb = require('mongodb');
 var http = require('http');
+var program = require('commander');
 var _ = require('underscore');
 
 var birdcage = {};
@@ -35,19 +36,32 @@ birdcage._saveTweets = function(tweets) {
   });
 };
 
-birdcage.startFetcher = function() {
-  var q = 'obama';
-  console.log('Fetching new tweets about "' + q + '" every five seconds.');
+birdcage.startFetcher = function(searchTerm) {
+  console.log('Fetching new tweets about "' + searchTerm + '" every five seconds.');
 
   setInterval(function() {
-    birdcage.store(q);
+    birdcage.store(searchTerm);
   }, 5000);
 };
 
-birdcage._db.open(function(err) {
-  if (err) {
-    throw(err);
-  } else {
-    birdcage.startFetcher();
-  }
-});
+birdcage.start = function(query) {
+  birdcage._db.open(function(err) {
+    if (err) {
+      throw(err);
+    } else {
+      birdcage.startFetcher(query);
+    }
+  });
+};
+
+program
+  .version('0.0.1')
+  .usage('[options] <search term>')
+  .parse(process.argv);
+
+if (program.args.length !== 1) {
+  program.help();
+} else {
+  var searchTerm = program.args[0];
+  birdcage.start(searchTerm);
+}
